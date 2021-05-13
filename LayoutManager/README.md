@@ -27,6 +27,8 @@ if (LayoutManager::Instance()->BeginDockSpace(ImGuiDockNodeFlags_PassthruCentral
 }
 
 LayoutManager::Instance()->DisplayPanes(widgetId);
+
+LayoutManager::Instance()->InitAfterFirstDisplay(ImVec2((float)vViewport.z, (float)vViewport.w)); // will apply default layout if needed
 ```
 
 ## Menu Bar Item:
