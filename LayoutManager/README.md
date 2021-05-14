@@ -1,6 +1,6 @@
 # ImTools - LayoutManager
 
-#demo
+## demo
 
 ![DEMO](https://github.com/aiekick/ImTools/blob/main/gifs/LayoutManager.gif)
 
