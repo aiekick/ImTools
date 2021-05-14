@@ -1,0 +1,5 @@
+git submodule add --force -b "master" https://github.com/glfw/glfw.git 3rdparty/glfw
+git submodule add --force -b "master" https://github.com/leethomason/tinyxml2.git 3rdparty/tinyxml2
+git submodule add --force -b "c" https://github.com/Dav1dde/glad.git 3rdparty/glad
+git submodule add --force -b "master" https://github.com/aiekick/cTools.git 3rdparty/ctools
+git submodule add --force -b "docking" https://github.com/ocornut/imgui.git 3rdparty/imgui

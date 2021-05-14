@@ -28,6 +28,20 @@ SOFTWARE.
 #include "AbstractPane.h"
 #include <imgui/imgui.h>
 
+namespace ImGui
+{
+	// ImGui::Begin for bitwize
+	template<typename T>
+	IMGUI_API bool Begin(const char* name, T* vContainer, T vFlag, ImGuiWindowFlags flags)
+	{
+		bool check = *vContainer & vFlag;
+		const bool res = Begin(name, &check, flags);
+		if (check) *vContainer = (T)(*vContainer | vFlag); // add
+		else *vContainer = (T)(*vContainer & ~vFlag); // remove
+		return res;
+	}
+}
+
 class ProjectFile;
 class LayoutManager : public conf::ConfigAbstract
 {
