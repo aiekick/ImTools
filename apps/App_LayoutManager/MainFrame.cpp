@@ -50,7 +50,7 @@ void MainFrame::Init()
 	LayoutManager::Instance()->AddPane(BottomPane::Instance(), "Bottom", (1 << 2), PaneDisposal::BOTTOM, true, true);
 	LayoutManager::Instance()->AddPane(TopPane::Instance(), "Top", (1 << 3), PaneDisposal::TOP, true, true);
 	LayoutManager::Instance()->AddPane(CentralPane::Instance(), "Central", (1 << 4), PaneDisposal::CENTRAL, true, true);
-	LayoutManager::Instance()->AddPane(SamplePane::Instance(), "Right", (1 << 5), PaneDisposal::CENTRAL, true, false);
+	LayoutManager::Instance()->AddPane(SamplePane::Instance(), "Sample", (1 << 5), PaneDisposal::RIGHT, true, false);
 }
 
 void MainFrame::Unit()

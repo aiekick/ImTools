@@ -1,9 +1,15 @@
 # ImTools - LayoutManager
 
+#demo
+
+![DEMO]()
+
+#dependency
+
 LayoutManager need the use of cTools for :
-- FileHelper
-- Logger
-- ConfigAbstract
+- FileHelper => just for test if the file imgui.ini exist or not
+- ConfigAbstract => for load/save xml settings
+- cTools => for variant class and other helper
 
 ## Init : 
 
