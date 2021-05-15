@@ -50,7 +50,7 @@ void LayoutManager::AddPane(
 	assert(m_PanesByName.find(vName) == m_PanesByName.end()); // pane name not already exist
 	assert(m_PanesByFlag.find(vFlag) == m_PanesByFlag.end()); // pane flag not already exist
 	
-	strncpy(vPane->m_PaneName, vName, std::min((size_t)PANE_NAME_BUFFER_SIZE, strlen(vName)));
+	strncpy(vPane->m_PaneName, vName, ct::mini((size_t)PANE_NAME_BUFFER_SIZE, strlen(vName)));
 	vPane->m_PaneFlag = vFlag;
 	vPane->m_PaneDisposal = vPaneDisposal;
 	vPane->m_OpenedDefault = vIsOpenedDefault;

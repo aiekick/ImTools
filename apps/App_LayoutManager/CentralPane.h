@@ -47,8 +47,8 @@ public: // configuration
 public: // singleton
 	static CentralPane* Instance()
 	{
-		static CentralPane *_instance = new CentralPane();
-		return _instance;
+		static CentralPane _instance;
+		return &_instance;
 	}
 
 protected:

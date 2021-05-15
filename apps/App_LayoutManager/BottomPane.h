@@ -47,8 +47,8 @@ public: // configuration
 public: // singleton
 	static BottomPane* Instance()
 	{
-		static BottomPane *_instance = new BottomPane();
-		return _instance;
+		static BottomPane _instance;
+		return &_instance;
 	}
 
 protected:

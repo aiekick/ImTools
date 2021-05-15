@@ -47,8 +47,8 @@ public: // configuration
 public: // singleton
 	static LeftPane* Instance()
 	{
-		static LeftPane *_instance = new LeftPane();
-		return _instance;
+		static LeftPane _instance;
+		return &_instance;
 	}
 
 protected:

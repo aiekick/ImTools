@@ -47,8 +47,8 @@ public: // configuration
 public: // singleton
 	static TopPane* Instance()
 	{
-		static TopPane *_instance = new TopPane();
-		return _instance;
+		static TopPane _instance;
+		return &_instance;
 	}
 
 protected:

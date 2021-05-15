@@ -47,8 +47,8 @@ public: // configuration
 public: // singleton
 	static SamplePane* Instance()
 	{
-		static SamplePane *_instance = new SamplePane();
-		return _instance;
+		static SamplePane _instance;
+		return &_instance;
 	}
 
 protected:
