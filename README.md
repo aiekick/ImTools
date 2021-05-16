@@ -1,5 +1,5 @@
 # ImTools
-Dear ImGui Widgets i used in my projects
+Dear ImGui Widgets/Tools i used in my projects
 
 ## [LayoutManager](LayoutManager) :
 
