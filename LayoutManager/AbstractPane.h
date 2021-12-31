@@ -2,6 +2,7 @@
 MIT License
 
 Copyright (c) 2021 Stephane Cuillerdier (aka Aiekick)
+https://github.com/aiekick/ImTools
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -44,20 +45,23 @@ class GenericRenderer;
 class AbstractPane
 {
 public:
-	char m_PaneName[PANE_NAME_BUFFER_SIZE + 1] = "";
+	const char* m_PaneName;
 	PaneFlags m_PaneFlag = 0;
 	PaneDisposal m_PaneDisposal = PaneDisposal::CENTRAL;
 	bool m_OpenedDefault = false;
-	bool m_FocusedDefault = false;
+	bool m_FocusedDefault = false; 
 
 public:
 	int m_PaneWidgetId = 0;
 	int NewWidgetId() { return ++m_PaneWidgetId; }
-	
+
 public:
 	virtual bool Init() = 0;
 	virtual void Unit() = 0;
 	virtual int DrawPanes(int vWidgetId, std::string vUserDatas) = 0;
 	virtual void DrawDialogsAndPopups(std::string vUserDatas) = 0;
 	virtual int DrawWidgets(int vWidgetId, std::string vUserDatas) = 0;
+
+public:
+	virtual bool CanWeDisplay() { return true; };
 };

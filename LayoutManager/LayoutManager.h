@@ -2,6 +2,7 @@
 MIT License
 
 Copyright (c) 2021 Stephane Cuillerdier (aka Aiekick)
+https://github.com/aiekick/ImTools
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,14 +26,16 @@ SOFTWARE.
 #pragma once
 
 #include <ctools/ConfigAbstract.h>
-#include "AbstractPane.h"
+#include <Helper/AbstractPane.h>
 #include <imgui/imgui.h>
+#include <vector>
+#include <array>
 
 namespace ImGui
 {
 	// ImGui::Begin for bitwize
 	template<typename T>
-	IMGUI_API bool Begin(const char* name, T* vContainer, T vFlag, ImGuiWindowFlags flags)
+	IMGUI_API bool BeginFlag(const char* name, T* vContainer, T vFlag, ImGuiWindowFlags flags)
 	{
 		bool check = *vContainer & vFlag;
 		const bool res = Begin(name, &check, flags);
@@ -51,10 +54,18 @@ private:
 	bool m_FirstStart = true;
 	char m_MenuLabel[PANE_NAME_BUFFER_SIZE + 1] = "";
 	char m_DefaultMenuLabel[PANE_NAME_BUFFER_SIZE + 1] = "";
+	std::array<float, (size_t)PaneDisposal::Count> m_PaneDisposalSizes = 
+	{	0.0f, // central size is ignored because depednant of others
+		200.0f, // left size
+		200.0f, // right size
+		200.0f, // bottom size
+		200.0f // top size
+	};
 
 protected:
 	std::map<PaneDisposal, AbstractPane*> m_PanesByDisposal;
 	std::map<const char*, AbstractPane*> m_PanesByName;
+	std::vector<AbstractPane*> m_PanesInDisplayOrder;
 	std::map<PaneFlags, AbstractPane*> m_PanesByFlag;
 	
 public:
@@ -74,6 +85,7 @@ public:
 		PaneDisposal vPaneDisposal, 
 		bool vIsOpenedDefault, 
 		bool vIsFocusedDefault);
+	void SetPaneDisposalSize(const PaneDisposal& vPaneDisposal, float vSize);
 
 public:
 	void Init(const char* vMenuLabel, const char* vDefautlMenuLabel);
@@ -110,8 +122,8 @@ public: // configuration
 public: // singleton
 	static LayoutManager *Instance()
 	{
-		static auto *_instance = new LayoutManager();
-		return _instance;
+		static LayoutManager _instance;
+		return &_instance;
 	}
 
 protected:

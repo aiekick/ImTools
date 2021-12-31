@@ -5,6 +5,7 @@
 MIT License
 
 Copyright (c) 2021 Stephane Cuillerdier (aka Aiekick)
+https://github.com/aiekick/ImTools
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,9 +29,9 @@ SOFTWARE.
 #include "LayoutManager.h"
 
 #include <ctools/FileHelper.h>
-#include <ctools/cTools.h>
+#include <ctools/Logger.h>
 
-#define IMGUI_DEFINE_MATH_OPERATORS
+
 #include <imgui/imgui_internal.h>
 
 LayoutManager::LayoutManager() = default;
@@ -50,7 +51,7 @@ void LayoutManager::AddPane(
 	assert(m_PanesByName.find(vName) == m_PanesByName.end()); // pane name not already exist
 	assert(m_PanesByFlag.find(vFlag) == m_PanesByFlag.end()); // pane flag not already exist
 	
-	strncpy(vPane->m_PaneName, vName, ct::mini((size_t)PANE_NAME_BUFFER_SIZE, strlen(vName)));
+	vPane->m_PaneName = vName;
 	vPane->m_PaneFlag = vFlag;
 	vPane->m_PaneDisposal = vPaneDisposal;
 	vPane->m_OpenedDefault = vIsOpenedDefault;
@@ -62,6 +63,16 @@ void LayoutManager::AddPane(
 	m_PanesByDisposal[vPane->m_PaneDisposal] = vPane;
 	m_PanesByName[vPane->m_PaneName] = vPane;
 	m_PanesByFlag[vPane->m_PaneFlag] = vPane;
+	m_PanesInDisplayOrder.push_back(vPane);
+}
+
+void LayoutManager::SetPaneDisposalSize(const PaneDisposal& vPaneDisposal, float vSize)
+{
+	if (vPaneDisposal == PaneDisposal::CENTRAL ||
+		vPaneDisposal == PaneDisposal::Count)
+		return;
+
+	m_PaneDisposalSizes[(int)vPaneDisposal] = vSize;
 }
 
 void LayoutManager::Init(const char* vMenuLabel, const char* vDefautlMenuLabel)
@@ -69,13 +80,18 @@ void LayoutManager::Init(const char* vMenuLabel, const char* vDefautlMenuLabel)
 	assert(vMenuLabel);
 	assert(vDefautlMenuLabel);
 
+#ifdef MSVC
+	strncpy_s(m_MenuLabel, vMenuLabel, ct::mini((size_t)PANE_NAME_BUFFER_SIZE, strlen(vMenuLabel)));
+	strncpy_s(m_DefaultMenuLabel, vDefautlMenuLabel, ct::mini((size_t)PANE_NAME_BUFFER_SIZE, strlen(vDefautlMenuLabel)));
+#else
 	strncpy(m_MenuLabel, vMenuLabel, ct::mini((size_t)PANE_NAME_BUFFER_SIZE, strlen(vMenuLabel)));
 	strncpy(m_DefaultMenuLabel, vDefautlMenuLabel, ct::mini((size_t)PANE_NAME_BUFFER_SIZE, strlen(vDefautlMenuLabel)));
+#endif
 
 	if (!FileHelper::Instance()->IsFileExist("imgui.ini"))
 	{
 		m_FirstLayout = true; // need default layout
-		printf("We will apply default layout :)");
+		LogVarDebug("We will apply default layout :)");
 	}
 }
 
@@ -167,16 +183,17 @@ void LayoutManager::ApplyInitialDockingLayout(ImVec2 vSize)
 	ImGui::DockBuilderAddNode(m_DockSpaceID, ImGuiDockNodeFlags_DockSpace); // Add empty node
 	ImGui::DockBuilderSetNodeSize(m_DockSpaceID, vSize);
 
-	const auto leftPaneDefaultWidth = 200.0f;
-	const auto rightPaneDefaultWidth = 200.0f;
-	const auto bottomPaneDefaultWidth = 200.0f;
-	const auto topPaneDefaultWidth = 200.0f;
+	// just for readability
+	const auto& left_size = m_PaneDisposalSizes[1];
+	const auto& right_size = m_PaneDisposalSizes[2];
+	const auto& bottom_size = m_PaneDisposalSizes[3];
+	const auto& top_size = m_PaneDisposalSizes[4];
 
 	auto dockMainID = m_DockSpaceID; // This variable will track the document node, however we are not using it here as we aren't docking anything into it.
-	const auto dockLeftID = ImGui::DockBuilderSplitNode(dockMainID, ImGuiDir_Left, leftPaneDefaultWidth / vSize.x, nullptr, &dockMainID);
-	const auto dockRightID = ImGui::DockBuilderSplitNode(dockMainID, ImGuiDir_Right, rightPaneDefaultWidth / vSize.x, nullptr, &dockMainID);
-	const auto dockBottomID = ImGui::DockBuilderSplitNode(dockMainID, ImGuiDir_Down, bottomPaneDefaultWidth / vSize.y, nullptr, &dockMainID);
-	const auto dockTopID = ImGui::DockBuilderSplitNode(dockMainID, ImGuiDir_Up, topPaneDefaultWidth / vSize.y, nullptr, &dockMainID);
+	const auto dockLeftID = ImGui::DockBuilderSplitNode(dockMainID, ImGuiDir_Left, left_size / vSize.x, nullptr, &dockMainID);
+	const auto dockRightID = ImGui::DockBuilderSplitNode(dockMainID, ImGuiDir_Right, right_size / (vSize.x - left_size), nullptr, &dockMainID);
+	const auto dockBottomID = ImGui::DockBuilderSplitNode(dockMainID, ImGuiDir_Down, bottom_size / vSize.y, nullptr, &dockMainID);
+	const auto dockTopID = ImGui::DockBuilderSplitNode(dockMainID, ImGuiDir_Up, top_size / (vSize.y - bottom_size), nullptr, &dockMainID);
 
 	for (const auto& pane : m_PanesByName)
 	{
@@ -250,10 +267,13 @@ void LayoutManager::DisplayMenu(ImVec2 vSize)
 		ImGui::Separator();
 
 		static char buffer[100 + 1] = "\0";
-		for (const auto& pane : m_PanesByName)
+		for (auto pane : m_PanesInDisplayOrder)
 		{
-			snprintf(buffer, 100, "%s Pane", pane.first);
-			LayoutManager_MenuItem<PaneFlags>(buffer, "", &m_Pane_Shown, pane.second->m_PaneFlag);
+			if (pane->CanWeDisplay())
+			{
+				snprintf(buffer, 100, "%s Pane", pane->m_PaneName);
+				LayoutManager_MenuItem<PaneFlags>(buffer, "", &m_Pane_Shown, pane->m_PaneFlag);
+			}
 		}
 		
 		ImGui::EndMenu();
@@ -264,7 +284,10 @@ int LayoutManager::DisplayPanes(int vWidgetId, std::string vUserDatas)
 {
 	for (const auto& pane : m_PanesByFlag)
 	{
-		vWidgetId = pane.second->DrawPanes(vWidgetId, vUserDatas);
+		if (pane.second->CanWeDisplay())
+		{
+			vWidgetId = pane.second->DrawPanes(vWidgetId, vUserDatas);
+		}
 	}
 
 	return vWidgetId;
@@ -274,7 +297,10 @@ void LayoutManager::DrawDialogsAndPopups(std::string vUserDatas)
 {
 	for (const auto& pane : m_PanesByFlag)
 	{
-		pane.second->DrawDialogsAndPopups(vUserDatas);
+		if (pane.second->CanWeDisplay())
+		{
+			pane.second->DrawDialogsAndPopups(vUserDatas);
+		}
 	}
 }
 
@@ -282,7 +308,10 @@ int LayoutManager::DrawWidgets(int vWidgetId, std::string vUserDatas)
 {
 	for (const auto& pane : m_PanesByFlag)
 	{
-		vWidgetId = pane.second->DrawWidgets(vWidgetId, vUserDatas);
+		if (pane.second->CanWeDisplay())
+		{
+			vWidgetId = pane.second->DrawWidgets(vWidgetId, vUserDatas);
+		}
 	}
 
 	return vWidgetId;
