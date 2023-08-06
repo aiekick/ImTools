@@ -26,7 +26,7 @@ SOFTWARE.
 #pragma once
 
 #include <ctools/ConfigAbstract.h>
-#include <Helper/AbstractPane.h>
+#include "AbstractPane.h"
 #include <imgui/imgui.h>
 #include <vector>
 #include <array>

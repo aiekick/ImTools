@@ -8,6 +8,13 @@ if (CMAKE_SYSTEM_NAME STREQUAL Linux)
 	endif()
 endif()
 
+## ----------- GLAD ----------- ##
+add_library(glad STATIC ${CMAKE_SOURCE_DIR}/3rdparty/glad/include/glad/glad.h ${CMAKE_SOURCE_DIR}/3rdparty/glad/src/glad.c)
+set_target_properties(glad PROPERTIES FOLDER 3rdparty)
+set(GLAD_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/glad/include)
+set(GLAD_LIBRARIES ${GLAD_LIBRARIES} glad)
+include_directories(${GLAD_INCLUDE_DIR})
+
 ## ----------- GLFW ----------- ##
 option(GLFW_BUILD_DOCS OFF)
 option(GLFW_BUILD_EXAMPLES OFF)
@@ -38,6 +45,7 @@ add_library(tinyxml2 STATIC ${TINYXML2_SOURCES})
 set_target_properties(tinyxml2 PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(tinyxml2 PROPERTIES FOLDER 3rdparty)
 set(TINYXML2_LIBRARIES tinyxml2)
+
 ## ----------- CTOOLS ----------- ##
 set(CTOOLS_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/ctools)
 file(GLOB CTOOLS_SOURCES ${CTOOLS_INCLUDE_DIR}/*.cpp ${CTOOLS_INCLUDE_DIR}/*.h)

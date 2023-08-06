@@ -56,7 +56,7 @@ int BottomPane::DrawPanes(int vWidgetId, std::string vUserDatas)
 
 	if (LayoutManager::Instance()->m_Pane_Shown & m_PaneFlag)
 	{
-		if (ImGui::Begin<PaneFlags>(m_PaneName,
+		if (ImGui::BeginFlag<PaneFlags>(m_PaneName,
 			&LayoutManager::Instance()->m_Pane_Shown, m_PaneFlag,
 			//ImGuiWindowFlags_NoTitleBar |
 			//ImGuiWindowFlags_MenuBar |
